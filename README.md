@@ -2,8 +2,8 @@
 
 An internal support ticketing tool prototype — built for The/Nudge Institute. Employees raise tickets for IT, HR, Finance, or Admin and track them to resolution; agents work them from a department queue; a lightweight AI layer handles auto-categorisation, duplicate detection, and draft replies.
 
-![status](<img width="1516" height="667" alt="image" src="https://github.com/user-attachments/assets/61b7403d-d4a6-4282-b48e-d3cee903d2e7" />
-) ![stack](<img width="1517" height="690" alt="image" src="https://github.com/user-attachments/assets/8cb59fa0-a406-4227-8f1b-5a64c53f8da9" />
+![status](<img width="1516" height="667" alt="Screenshot 2026-06-22 002128" src="https://github.com/user-attachments/assets/aa5ced8e-4370-49f6-8007-0146ff4be20c" />
+
 )
 
 ## Features
