@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nudge Desk — Internal Support</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brown-900:#33231A;
+    --brown-700:#6B4226;
+    --brown-600:#7C4E2D;
+    --brown-500:#A67C52;
+    --brown-300:#D9BFA0;
+    --gold-500:#C9972C;
+    --gold-300:#E3BE6C;
+    --cream-50:#FBF6EF;
+    --cream-100:#F3E8D9;
+    --cream-200:#ECDCC4;
+    --green-600:#4F7942;
+    --green-100:#E3ECD9;
+    --amber-600:#C97C2C;
+    --amber-100:#F6E3C9;
+    --red-600:#B23A2E;
+    --red-100:#F3DAD6;
+    --gray-500:#8A7B6C;
+    --gray-100:#EDE6DA;
+    --shadow: 0 1px 2px rgba(51,35,26,.06), 0 8px 24px -8px rgba(51,35,26,.12);
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 100% -10%, #F8EBD6 0%, transparent 60%),
+      var(--cream-50);
+    color:var(--brown-900);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{font-family:'Fraunces',serif;}
+  ::selection{background:var(--gold-300);}
+
+  /* ---------- Header ---------- */
+  header.topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px;border-bottom:1px solid var(--cream-200);
+    background:rgba(251,246,239,.9);backdrop-filter:blur(6px);
+    position:sticky;top:0;z-index:50;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .logo{
+    width:38px;height:38px;border-radius:50%;
+    background:conic-gradient(from 220deg, var(--brown-700), var(--gold-500) 45%, var(--brown-700) 100%);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,.25);
+  }
+  .logo svg{width:18px;height:18px;}
+  .brand-text .name{font-family:'Fraunces',serif;font-weight:600;font-size:19px;letter-spacing:.2px;line-height:1.1;}
+  .brand-text .tag{font-size:11px;color:var(--brown-500);letter-spacing:.06em;text-transform:uppercase;}
+  nav.tabs{display:flex;gap:4px;background:var(--cream-100);padding:4px;border-radius:999px;}
+  nav.tabs button{
+    border:none;background:transparent;padding:9px 16px;border-radius:999px;
+    font-family:'Inter';font-size:13.5px;font-weight:600;color:var(--brown-700);
+    cursor:pointer;transition:.15s;
+  }
+  nav.tabs button.active{background:var(--brown-700);color:#fff;}
+  nav.tabs button:not(.active):hover{background:var(--cream-200);}
+  .header-right{display:flex;align-items:center;gap:14px;}
+  .role-toggle{display:flex;background:var(--cream-100);border-radius:999px;padding:3px;font-size:12.5px;font-weight:600;}
+  .role-toggle button{border:none;background:transparent;padding:7px 13px;border-radius:999px;cursor:pointer;color:var(--brown-700);}
+  .role-toggle button.active{background:#fff;color:var(--brown-900);box-shadow:var(--shadow);}
+  .bell{position:relative;cursor:pointer;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--cream-100);}
+  .bell:hover{background:var(--cream-200);}
+  .bell .dot{position:absolute;top:7px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--red-600);border:2px solid var(--cream-50);}
+
+  main{max-width:1180px;margin:0 auto;padding:36px 32px 80px;}
+  .eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-500);margin-bottom:6px;}
+  .page-title{font-size:30px;font-weight:600;margin:0 0 6px;}
+  .page-sub{color:var(--brown-500);font-size:14.5px;margin-bottom:28px;max-width:640px;line-height:1.5;}
+
+  .grid{display:grid;grid-template-columns:1.3fr .9fr;gap:22px;align-items:start;}
+  @media(max-width:880px){.grid{grid-template-columns:1fr;}}
+
+  .card{background:#fff;border:1px solid var(--cream-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;}
+  .card + .card{margin-top:18px;}
+  label{display:block;font-size:12.5px;font-weight:700;color:var(--brown-700);margin:16px 0 6px;letter-spacing:.01em;}
+  label:first-child{margin-top:0;}
+  input[type=text],textarea,select{
+    width:100%;border:1.5px solid var(--cream-200);background:var(--cream-50);
+    border-radius:10px;padding:11px 13px;font-family:'Inter';font-size:14.5px;color:var(--brown-900);
+    transition:.15s;
+  }
+  input[type=text]:focus,textarea:focus,select:focus{outline:none;border-color:var(--gold-500);background:#fff;box-shadow:0 0 0 3px rgba(201,151,44,.15);}
+  textarea{resize:vertical;min-height:96px;line-height:1.5;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+  .chip-group{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    border:1.5px solid var(--cream-200);background:var(--cream-50);padding:8px 14px;border-radius:999px;
+    font-size:13px;font-weight:600;cursor:pointer;color:var(--brown-700);transition:.15s;
+  }
+  .chip.selected{background:var(--brown-700);border-color:var(--brown-700);color:#fff;}
+  .chip[data-urgency="Critical"].selected{background:var(--red-600);border-color:var(--red-600);}
+  .chip[data-urgency="High"].selected{background:var(--amber-600);border-color:var(--amber-600);}
+  .chip[data-urgency="Medium"].selected{background:var(--gold-500);border-color:var(--gold-500);}
+  .chip[data-urgency="Low"].selected{background:var(--gray-500);border-color:var(--gray-500);}
+
+  .ai-banner{
+    margin-top:14px;border-radius:12px;padding:13px 15px;background:linear-gradient(135deg,var(--cream-100),var(--cream-50));
+    border:1px dashed var(--brown-300);display:flex;gap:11px;align-items:flex-start;font-size:13.3px;color:var(--brown-700);
+  }
+  .ai-banner .spark{flex-shrink:0;width:22px;height:22px;margin-top:1px;}
+  .ai-banner b{color:var(--brown-900);}
+  .ai-banner .conf{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;background:var(--gold-300);color:var(--brown-900);padding:1px 8px;border-radius:999px;}
+
+  .similar-list{margin-top:10px;display:flex;flex-direction:column;gap:8px;}
+  .similar-item{border:1px solid var(--cream-200);border-radius:10px;padding:10px 12px;font-size:13px;background:var(--cream-50);}
+  .similar-item .t{font-weight:600;color:var(--brown-900);margin-bottom:2px;}
+  .similar-item .r{color:var(--brown-500);}
+
+  .btn{
+    border:none;background:var(--brown-700);color:#fff;padding:12px 22px;border-radius:10px;
+    font-weight:700;font-size:14.5px;cursor:pointer;font-family:'Inter';transition:.15s;
+  }
+  .btn:hover{background:var(--brown-900);}
+  .btn.ghost{background:transparent;color:var(--brown-700);border:1.5px solid var(--cream-200);}
+  .btn.ghost:hover{background:var(--cream-100);}
+  .btn.sm{padding:8px 14px;font-size:12.5px;border-radius:8px;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  /* tickets */
+  .ticket-card{border:1px solid var(--cream-200);border-radius:12px;padding:16px;margin-bottom:12px;background:#fff;cursor:pointer;transition:.15s;}
+  .ticket-card:hover{border-color:var(--brown-300);box-shadow:var(--shadow);}
+  .ticket-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+  .ticket-id{font-family:'JetBrains Mono';font-size:11px;color:var(--brown-500);}
+  .ticket-title{font-weight:700;font-size:15px;margin:3px 0 6px;}
+  .ticket-desc{font-size:13px;color:var(--brown-500);line-height:1.5;margin-bottom:10px;
+    display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;}
+  .badge.cat{background:var(--cream-100);color:var(--brown-700);}
+  .badge.urg-Low{background:var(--gray-100);color:var(--gray-500);}
+  .badge.urg-Medium{background:var(--amber-100);color:var(--amber-600);}
+  .badge.urg-High{background:var(--amber-100);color:var(--amber-600);}
+  .badge.urg-Critical{background:var(--red-100);color:var(--red-600);}
+  .badge.st-Open{background:var(--red-100);color:var(--red-600);}
+  .badge.st-In_Progress{background:var(--amber-100);color:var(--amber-600);}
+  .badge.st-Resolved{background:var(--green-100);color:var(--green-600);}
+  .badge.st-Closed{background:var(--gray-100);color:var(--gray-500);}
+
+  /* nudge meter — signature element */
+  .nudgemeter{display:flex;align-items:center;gap:0;margin-top:12px;}
+  .nm-step{flex:1;height:5px;background:var(--cream-200);position:relative;border-radius:3px;margin-right:4px;}
+  .nm-step:last-child{margin-right:0;}
+  .nm-step.done{background:var(--gold-500);}
+  .nm-step.current{background:linear-gradient(90deg,var(--gold-500),var(--brown-300));}
+  .nm-labels{display:flex;justify-content:space-between;margin-top:5px;font-size:9.5px;font-weight:700;color:var(--brown-500);text-transform:uppercase;letter-spacing:.04em;}
+
+  .meta-row{display:flex;gap:14px;font-size:12px;color:var(--brown-500);margin-top:10px;flex-wrap:wrap;}
+  .meta-row span{display:flex;align-items:center;gap:5px;}
+
+  /* dept queue columns */
+  .queue-cols{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  @media(max-width:1000px){.queue-cols{grid-template-columns:1fr 1fr;}}
+  .queue-col h3{font-size:14px;margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;}
+  .count-pill{background:var(--cream-100);color:var(--brown-700);font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;}
+
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(51,35,26,.45);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px;}
+  .overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:18px;max-width:620px;width:100%;max-height:88vh;overflow-y:auto;padding:28px;box-shadow:0 30px 60px -20px rgba(51,35,26,.35);}
+  .modal-close{float:right;border:none;background:var(--cream-100);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;color:var(--brown-700);}
+  .timeline{border-left:2px solid var(--cream-200);margin-left:6px;padding-left:18px;margin-top:16px;}
+  .tl-item{position:relative;padding-bottom:18px;}
+  .tl-item::before{content:'';position:absolute;left:-23px;top:3px;width:9px;height:9px;border-radius:50%;background:var(--gold-500);border:2px solid #fff;box-shadow:0 0 0 1.5px var(--gold-500);}
+  .tl-item .when{font-size:11px;color:var(--brown-500);}
+  .tl-item .what{font-size:13.5px;margin-top:2px;}
+
+  .draft-box{border:1.5px dashed var(--brown-300);border-radius:12px;padding:14px;background:var(--cream-50);margin-top:10px;}
+  .draft-box textarea{min-height:110px;background:#fff;}
+
+  /* analytics */
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+  @media(max-width:880px){.stat-grid{grid-template-columns:1fr 1fr;}}
+  .stat-card{background:#fff;border:1px solid var(--cream-200);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);}
+  .stat-card .num{font-family:'Fraunces';font-size:30px;font-weight:600;}
+  .stat-card .lbl{font-size:12px;color:var(--brown-500);font-weight:600;margin-top:2px;}
+  .bars{display:flex;flex-direction:column;gap:10px;}
+  .bar-row{display:grid;grid-template-columns:110px 1fr 36px;align-items:center;gap:10px;font-size:13px;}
+  .bar-track{height:10px;background:var(--cream-100);border-radius:6px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--brown-700),var(--gold-500));}
+
+  .empty{text-align:center;padding:50px 20px;color:var(--brown-500);}
+  .empty svg{width:46px;height:46px;margin-bottom:10px;opacity:.5;}
+
+  .toast-wrap{position:fixed;bottom:24px;right:24px;z-index:200;display:flex;flex-direction:column;gap:10px;}
+  .toast{background:var(--brown-900);color:#fff;padding:13px 18px;border-radius:12px;font-size:13.5px;box-shadow:0 14px 30px -10px rgba(0,0,0,.4);max-width:320px;animation:slidein .25s ease;}
+  @keyframes slidein{from{transform:translateY(12px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+
+  .footnote{margin-top:30px;font-size:11.5px;color:var(--brown-500);text-align:center;}
+  ::-webkit-scrollbar{width:9px;}::-webkit-scrollbar-thumb{background:var(--cream-200);border-radius:8px;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13.5L11 7.5L15 11.5L19 7" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 7H14.5M19 7V11.5" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="brand-text">
+      <div class="name">Nudge Desk</div>
+      <div class="tag">internal support</div>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="submit" class="active">Raise a ticket</button>
+    <button data-tab="mine">My tickets</button>
+    <button data-tab="queue">Department queue</button>
+    <button data-tab="analytics">Analytics</button>
+  </nav>
+  <div class="header-right">
+    <div class="bell" id="bellBtn" title="Notifications"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="#6B4226" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 01-3.4 0" stroke="#6B4226" stroke-width="2" stroke-linecap="round"/></svg><div class="dot" id="bellDot" style="display:none;"></div></div>
+  </div>
+</header>
+
+<main>
+  <!-- SUBMIT TAB -->
+  <section id="tab-submit">
+    <div class="eyebrow">Step one</div>
+    <h1 class="page-title">What's going on?</h1>
+    <p class="page-sub">Describe the issue in your own words — Nudge Desk will suggest the right department and flag similar tickets that were already solved, so you're not waiting on something we've already fixed.</p>
+
+    <div class="grid">
+      <div class="card">
+        <label>Your name</label>
+        <input type="text" id="f-name" placeholder="e.g. Aanya Mehta">
+
+        <label>Ticket title</label>
+        <input type="text" id="f-title" placeholder="Short summary, e.g. 'Laptop won't connect to office wifi'">
+
+        <label>Describe the issue</label>
+        <textarea id="f-desc" placeholder="The more detail, the faster we can route and resolve this — what happened, when, and what you've already tried."></textarea>
+
+        <div class="ai-banner" id="aiBanner" style="display:none;"></div>
+        <div id="similarWrap"></div>
+
+        <label>Department</label>
+        <select id="f-cat">
+          <option value="IT">IT</option>
+          <option value="HR">HR</option>
+          <option value="Finance">Finance</option>
+          <option value="Admin">Admin</option>
+        </select>
+
+        <label>Urgency</label>
+        <div class="chip-group" id="urgencyChips">
+          <div class="chip" data-urgency="Low">Low</div>
+          <div class="chip" data-urgency="Medium">Medium</div>
+          <div class="chip" data-urgency="High">High</div>
+          <div class="chip" data-urgency="Critical">Critical</div>
+        </div>
+
+        <div style="margin-top:22px;display:flex;gap:10px;">
+          <button class="btn" id="submitBtn">Submit ticket</button>
+          <button class="btn ghost" id="clearBtn">Clear</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 4px;font-size:15px;">How routing works</h3>
+        <p style="font-size:13px;color:var(--brown-500);line-height:1.6;margin:0 0 14px;">As you describe the problem, Nudge Desk's assistant reads it and proposes a department and urgency — you stay in control and can always change them before sending.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="meta-row"><span>🖥️ <b style="color:var(--brown-900)">IT</b> — devices, access, network, software</span></div>
+          <div class="meta-row"><span>🧑‍🤝‍🧑 <b style="color:var(--brown-900)">HR</b> — leave, payroll, onboarding, conduct</span></div>
+          <div class="meta-row"><span>💰 <b style="color:var(--brown-900)">Finance</b> — expenses, invoices, reimbursements</span></div>
+          <div class="meta-row"><span>🏢 <b style="color:var(--brown-900)">Admin</b> — facilities, travel, assets, supplies</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MY TICKETS TAB -->
+  <section id="tab-mine" style="display:none;">
+    <div class="eyebrow">Your activity</div>
+    <h1 class="page-title">My tickets</h1>
+    <p class="page-sub">Tracked by the name you used when submitting. Each ticket moves left to right as it's worked on — a nudge at a time.</p>
+    <div class="row2" style="max-width:380px;margin-bottom:20px;">
+      <div>
+        <label style="margin-top:0;">Filter by your name</label>
+        <input type="text" id="mine-name" placeholder="e.g. Aanya Mehta">
+      </div>
+    </div>
+    <div id="mineList"></div>
+  </section>
+
+  <!-- QUEUE TAB -->
+  <section id="tab-queue" style="display:none;">
+    <div class="eyebrow">Agent view</div>
+    <h1 class="page-title">Department queue</h1>
+    <p class="page-sub">Sorted by urgency, then age. Click any ticket to update its status — the employee is notified automatically.</p>
+    <div class="queue-cols" id="queueCols"></div>
+  </section>
+
+  <!-- ANALYTICS TAB -->
+  <section id="tab-analytics" style="display:none;">
+    <div class="eyebrow">Operations</div>
+    <h1 class="page-title">Analytics</h1>
+    <p class="page-sub">A live read on volume, load by department, and how fast tickets move from raised to resolved.</p>
+    <div class="stat-grid" id="statGrid"></div>
+    <div class="grid">
+      <div class="card">
+        <h3 style="margin:0 0 14px;font-size:15px;">Tickets by department</h3>
+        <div class="bars" id="barsDept"></div>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 14px;font-size:15px;">Tickets by urgency</h3>
+        <div class="bars" id="barsUrg"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:18px;">
+      <h3 style="margin:0 0 14px;font-size:15px;">Status breakdown</h3>
+      <div class="bars" id="barsStatus"></div>
+    </div>
+  </section>
+
+  <p class="footnote">Prototype for The/Nudge Institute · Ticket data is shared across everyone using this demo · Auto-categorisation, similar-ticket matching &amp; draft replies are simulated for this prototype</p>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ---------------- AI LAYER (lightweight, on-device heuristics) ---------------- */
+const KEYWORDS = {
+  IT: ['wifi','wi-fi','laptop','password','login','log in','vpn','software','printer','network','system','access','email','outlook','server','crash','install','license','monitor','keyboard','mouse','bug','error','reset','account locked','slow','virus','update'],
+  HR: ['leave','payroll','salary','onboarding','policy','benefits','harassment','attendance','appraisal','offer letter','resignation','background check','insurance','pf','provident','maternity','conduct','grievance','training'],
+  Finance: ['reimbursement','invoice','expense','budget','payment','tax','vendor','advance','bill','gst','receipt','reconciliation','purchase order','refund','salary advance','audit'],
+  Admin: ['facility','seating','travel','stationery','cleaning','parking','asset','id card','courier','desk','ac ','air condition','keys','badge','visitor','cab','meeting room','housekeeping']
+};
+const URGENT_WORDS = ['urgent','asap','immediately','blocked','can\'t work','cannot work','critical','down','stuck','emergency','deadline today'];
+const HIGH_WORDS = ['important','soon','affecting work','multiple people','team blocked'];
+
+function aiCategorize(text){
+  const t = text.toLowerCase();
+  let scores = {IT:0,HR:0,Finance:0,Admin:0};
+  for(const cat in KEYWORDS){
+    KEYWORDS[cat].forEach(k=>{ if(t.includes(k)) scores[cat]+= (k.split(' ').length>1?2:1); });
+  }
+  let best='IT', max=0;
+  for(const c in scores){ if(scores[c]>max){max=scores[c];best=c;} }
+  const total = Object.values(scores).reduce((a,b)=>a+b,0) || 1;
+  const confidence = max===0 ? 0 : Math.min(96, Math.round((max/total)*100));
+  return {category: best, confidence, matched: max>0};
+}
+function aiUrgency(text){
+  const t = text.toLowerCase();
+  if(URGENT_WORDS.some(w=>t.includes(w))) return 'Critical';
+  if(HIGH_WORDS.some(w=>t.includes(w))) return 'High';
+  return null;
+}
+function tokenize(s){
+  return new Set((s||'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w.length>3));
+}
+function jaccard(a,b){
+  const A=tokenize(a), B=tokenize(b);
+  if(A.size===0||B.size===0) return 0;
+  let inter=0; A.forEach(w=>{if(B.has(w)) inter++;});
+  return inter / (A.size + B.size - inter);
+}
+function aiDraftReply(ticket){
+  const name = ticket.name.split(' ')[0];
+  const openers = {
+    IT: `Thanks for the report — logging this as an IT issue. We'll check your device/account configuration and get back to you with next steps.`,
+    HR: `Thanks for reaching out — we've logged this with the HR team. We'll review the details and follow up with you directly, keeping this confidential.`,
+    Finance: `Thanks for flagging this — it's been logged with Finance. We'll verify the relevant records and confirm the next steps with you.`,
+    Admin: `Thanks for letting us know — this has been logged with the Admin team and we'll coordinate with the relevant vendor/facility contact.`
+  };
+  const urgencyLine = (ticket.urgency==='Critical'||ticket.urgency==='High')
+    ? ` Given the ${ticket.urgency.toLowerCase()} priority, we're prioritising this ahead of routine items.`
+    : ` We'll work through this in the order it was received.`;
+  return `Hi ${name},\n\n${openers[ticket.category]}${urgencyLine}\n\nTicket: "${ticket.title}"\nWe'll update you here as soon as there's progress.\n\n— Nudge Desk, ${ticket.category} team`;
+}
+
+/* ---------------- DATA / STORAGE ---------------- */
+const STATUSES = ['Open','In Progress','Resolved','Closed'];
+const DEPTS = ['IT','HR','Finance','Admin'];
+let TICKETS = [];
+let lastSeenCount = 0;
+
+const SEED = [
+  {title:"Can't connect laptop to office wifi", description:"My laptop keeps disconnecting from the office wifi network every few minutes, especially near the 3rd floor.", category:'IT', urgency:'Medium', name:'Rohit Sharma', status:'Resolved', resolution:'Reset network adapter and moved device to 5GHz band — resolved.'},
+  {title:"VPN access not working from home", description:"I can't log into the VPN from home, it says invalid credentials even after password reset.", category:'IT', urgency:'High', name:'Priya Nair', status:'Resolved', resolution:'VPN profile was expired, reissued new credentials.'},
+  {title:"Reimbursement for client travel pending", description:"Submitted my travel expense reimbursement two weeks ago for the Mumbai client visit, still pending approval.", category:'Finance', urgency:'Medium', name:'Karan Verma', status:'Resolved', resolution:'Approved and processed in next payroll cycle.'},
+  {title:"Leave balance shows incorrect days", description:"My leave balance in the HR portal shows 2 days less than what I actually have remaining this year.", category:'HR', urgency:'Low', name:'Sneha Iyer', status:'Resolved', resolution:'Correction applied after auditing leave ledger.'},
+  {title:"AC not working in 2nd floor meeting room", description:"The air conditioning in the 2nd floor meeting room has not been working for two days, makes it hard to host calls.", category:'Admin', urgency:'Medium', name:'Arjun Das', status:'Resolved', resolution:'Vendor serviced the unit, fixed gas leak.'},
+  {title:"New joiner laptop not provisioned", description:"New team member starts Monday and still hasn't received a laptop or system access.", category:'IT', urgency:'High', name:'Meera Joshi', status:'Resolved', resolution:'Laptop provisioned a day before joining date.'}
+];
+
+async function loadTickets(){
+  try{
+    const res = await window.storage.get('tickets', true);
+    TICKETS = res && res.value ? JSON.parse(res.value) : [];
+  }catch(e){ TICKETS = []; }
+  if(TICKETS.length===0){
+    TICKETS = SEED.map((s,i)=>({
+      id:'NDG-' + (1000+i),
+      ...s,
+      createdAt: Date.now() - (10-i)*86400000,
+      updates:[{when:Date.now()-(9-i)*86400000, what:'Status changed to Resolved — ' + s.resolution}]
+    }));
+    await saveTickets();
+  }
+  render();
+}
+async function saveTickets(){
+  try{ await window.storage.set('tickets', JSON.stringify(TICKETS), true); }catch(e){ console.error('save failed', e); }
+}
+function nextId(){
+  const nums = TICKETS.map(t=>parseInt((t.id||'NDG-1000').split('-')[1]||1000));
+  return 'NDG-' + (Math.max(1000,...nums) + 1);
+}
+
+/* ---------------- TABS ---------------- */
+document.getElementById('tabs').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['submit','mine','queue','analytics'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display = (t===btn.dataset.tab)?'block':'none';
+  });
+  if(btn.dataset.tab==='mine') renderMine();
+  if(btn.dataset.tab==='queue') renderQueue();
+  if(btn.dataset.tab==='analytics') renderAnalytics();
+});
+
+/* ---------------- SUBMIT FORM ---------------- */
+let selectedUrgency = null;
+document.getElementById('urgencyChips').addEventListener('click', e=>{
+  const chip = e.target.closest('.chip'); if(!chip) return;
+  document.querySelectorAll('#urgencyChips .chip').forEach(c=>c.classList.remove('selected'));
+  chip.classList.add('selected');
+  selectedUrgency = chip.dataset.urgency;
+});
+
+let aiSuggestedCat = null;
+const descEl = document.getElementById('f-desc');
+let debounceTimer;
+descEl.addEventListener('input', ()=>{
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(runAI, 350);
+});
+function runAI(){
+  const text = (document.getElementById('f-title').value + ' ' + descEl.value).trim();
+  const banner = document.getElementById('aiBanner');
+  const simWrap = document.getElementById('similarWrap');
+  if(text.length < 8){ banner.style.display='none'; simWrap.innerHTML=''; return; }
+
+  const {category, confidence, matched} = aiCategorize(text);
+  aiSuggestedCat = category;
+  document.getElementById('f-cat').value = category;
+  const urg = aiUrgency(text);
+  if(urg && !selectedUrgency){
+    document.querySelector(`.chip[data-urgency="${urg}"]`).click();
+  }
+
+  banner.style.display = 'flex';
+  banner.innerHTML = `<svg class="spark" viewBox="0 0 24 24" fill="none"><path d="M12 2L13.8 8.2L20 10L13.8 11.8L12 18L10.2 11.8L4 10L10.2 8.2L12 2Z" fill="#C9972C"/></svg>
+    <div>${matched ? `Based on your description, this looks like an <b>${category}</b> ticket.<span class="conf">${confidence}% match</span> Department set below — change it if that's not right.` : `Couldn't find a strong match yet — keep typing, or pick a department manually.`}</div>`;
+
+  // similar resolved tickets
+  const resolved = TICKETS.filter(t=>t.status==='Resolved' || t.status==='Closed');
+  const scored = resolved.map(t=>({t, score: jaccard(text, t.title+' '+t.description)}))
+    .filter(s=>s.score>0.08).sort((a,b)=>b.score-a.score).slice(0,3);
+  if(scored.length){
+    simWrap.innerHTML = `<label style="margin-bottom:6px;">Similar resolved tickets</label><div class="similar-list">` +
+      scored.map(s=>`<div class="similar-item"><div class="t">${escapeHtml(s.t.title)}</div><div class="r">${escapeHtml(s.t.resolution || (s.t.updates[s.t.updates.length-1]?.what||''))}</div></div>`).join('') +
+      `</div>`;
+  } else { simWrap.innerHTML=''; }
+}
+
+document.getElementById('submitBtn').addEventListener('click', async ()=>{
+  const name = document.getElementById('f-name').value.trim();
+  const title = document.getElementById('f-title').value.trim();
+  const description = descEl.value.trim();
+  const category = document.getElementById('f-cat').value;
+  if(!name || !title || !description || !selectedUrgency){
+    showToast('Please fill in your name, title, description, and pick an urgency.');
+    return;
+  }
+  const ticket = {
+    id: nextId(), name, title, description, category, urgency: selectedUrgency,
+    status:'Open', createdAt: Date.now(),
+    updates:[{when:Date.now(), what:'Ticket raised and routed to '+category}]
+  };
+  TICKETS.unshift(ticket);
+  await saveTickets();
+  showToast(`Ticket ${ticket.id} submitted to ${category} — you'll be notified as it moves.`);
+  document.getElementById('f-name').value=''; document.getElementById('f-title').value=''; descEl.value='';
+  document.querySelectorAll('#urgencyChips .chip').forEach(c=>c.classList.remove('selected'));
+  selectedUrgency=null;
+  document.getElementById('aiBanner').style.display='none';
+  document.getElementById('similarWrap').innerHTML='';
+  document.getElementById('mine-name').value = name;
+  render();
+});
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  document.getElementById('f-name').value=''; document.getElementById('f-title').value=''; descEl.value='';
+  document.querySelectorAll('#urgencyChips .chip').forEach(c=>c.classList.remove('selected'));
+  selectedUrgency=null;
+  document.getElementById('aiBanner').style.display='none';
+  document.getElementById('similarWrap').innerHTML='';
+});
+
+/* ---------------- RENDER HELPERS ---------------- */
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function timeAgo(ts){
+  const diff = Date.now()-ts, h = Math.floor(diff/3600000);
+  if(h<1) return 'just now';
+  if(h<24) return h+'h ago';
+  return Math.floor(h/24)+'d ago';
+}
+function nudgeMeterHtml(status){
+  const idx = STATUSES.indexOf(status);
+  return `<div class="nudgemeter">${STATUSES.map((s,i)=>`<div class="nm-step ${i<idx?'done':(i===idx?'current':'')}"></div>`).join('')}</div>
+  <div class="nm-labels">${STATUSES.map(s=>`<span>${s.replace(' ','\\n')}</span>`).join('')}</div>`;
+}
+function ticketCardHtml(t, clickable=true){
+  return `<div class="ticket-card" data-id="${t.id}" ${clickable?'':'style="cursor:default"'}>
+    <div class="ticket-top">
+      <div>
+        <div class="ticket-id">${t.id}</div>
+        <div class="ticket-title">${escapeHtml(t.title)}</div>
+      </div>
+      <span class="badge st-${t.status.replace(' ','_')}">${t.status}</span>
+    </div>
+    <div class="ticket-desc">${escapeHtml(t.description)}</div>
+    <div>
+      <span class="badge cat">${t.category}</span>
+      <span class="badge urg-${t.urgency}" style="margin-left:6px;">${t.urgency}</span>
+    </div>
+    <div class="meta-row"><span>👤 ${escapeHtml(t.name)}</span><span>🕒 ${timeAgo(t.createdAt)}</span></div>
+    ${nudgeMeterHtml(t.status)}
+  </div>`;
+}
+
+function render(){
+  // refresh whichever tab is open
+  const active = document.querySelector('#tabs button.active').dataset.tab;
+  if(active==='mine') renderMine();
+  if(active==='queue') renderQueue();
+  if(active==='analytics') renderAnalytics();
+  updateBell();
+}
+
+/* ---------------- MY TICKETS ---------------- */
+const mineNameInput = document.getElementById('mine-name');
+mineNameInput.addEventListener('input', renderMine);
+function renderMine(){
+  const name = mineNameInput.value.trim().toLowerCase();
+  const list = document.getElementById('mineList');
+  const mine = TICKETS.filter(t=> name ? t.name.toLowerCase().includes(name) : false);
+  if(!name){
+    list.innerHTML = `<div class="empty">Enter your name above to see your tickets.</div>`;
+    return;
+  }
+  if(mine.length===0){
+    list.innerHTML = `<div class="empty">No tickets found for "${escapeHtml(mineNameInput.value)}" yet.</div>`;
+    return;
+  }
+  list.innerHTML = mine.map(t=>ticketCardHtml(t)).join('');
+  list.querySelectorAll('.ticket-card').forEach(el=>el.addEventListener('click', ()=>openModal(el.dataset.id, false)));
+}
+
+/* ---------------- QUEUE ---------------- */
+function renderQueue(){
+  const cols = document.getElementById('queueCols');
+  const urgRank = {Critical:0,High:1,Medium:2,Low:3};
+  cols.innerHTML = DEPTS.map(dept=>{
+    const items = TICKETS.filter(t=>t.category===dept && t.status!=='Closed')
+      .sort((a,b)=> urgRank[a.urgency]-urgRank[b.urgency] || a.createdAt-b.createdAt);
+    return `<div class="queue-col">
+      <h3>${dept} <span class="count-pill">${items.length}</span></h3>
+      ${items.length ? items.map(t=>ticketCardHtml(t)).join('') : `<div class="empty" style="padding:24px 10px;">No open tickets 🎉</div>`}
+    </div>`;
+  }).join('');
+  cols.querySelectorAll('.ticket-card').forEach(el=>el.addEventListener('click', ()=>openModal(el.dataset.id, true)));
+}
+
+/* ---------------- MODAL ---------------- */
+function openModal(id, isAgent){
+  const t = TICKETS.find(x=>x.id===id); if(!t) return;
+  const overlay = document.getElementById('overlay');
+  const body = document.getElementById('modalBody');
+  const draft = aiDraftReply(t);
+  body.innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="ticket-id">${t.id}</div>
+    <h2 style="margin:4px 0 8px;font-size:22px;">${escapeHtml(t.title)}</h2>
+    <div style="margin-bottom:10px;">
+      <span class="badge cat">${t.category}</span>
+      <span class="badge urg-${t.urgency}" style="margin-left:6px;">${t.urgency}</span>
+      <span class="badge st-${t.status.replace(' ','_')}" style="margin-left:6px;">${t.status}</span>
+    </div>
+    <p style="font-size:14px;line-height:1.6;color:var(--brown-900);">${escapeHtml(t.description)}</p>
+    <div class="meta-row"><span>👤 Raised by ${escapeHtml(t.name)}</span><span>🕒 ${timeAgo(t.createdAt)}</span></div>
+    ${nudgeMeterHtml(t.status)}
+
+    ${isAgent ? `
+      <label>Update status</label>
+      <select id="statusSelect">${STATUSES.map(s=>`<option ${s===t.status?'selected':''}>${s}</option>`).join('')}</select>
+      <div class="draft-box">
+        <label style="margin-top:0;">✨ AI-suggested first response (edit before sending)</label>
+        <textarea id="draftText">${draft}</textarea>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:10px;">
+        <button class="btn" id="saveUpdateBtn">Save update &amp; notify employee</button>
+      </div>
+    ` : ''}
+
+    <label style="margin-top:18px;">Activity</label>
+    <div class="timeline">
+      ${t.updates.slice().reverse().map(u=>`<div class="tl-item"><div class="when">${new Date(u.when).toLocaleString()}</div><div class="what">${escapeHtml(u.what)}</div></div>`).join('')}
+    </div>
+  `;
+  overlay.classList.add('show');
+  if(isAgent){
+    document.getElementById('saveUpdateBtn').addEventListener('click', async ()=>{
+      const newStatus = document.getElementById('statusSelect').value;
+      const replyText = document.getElementById('draftText').value.trim();
+      const changed = newStatus !== t.status;
+      if(changed){
+        t.updates.push({when:Date.now(), what:`Status changed to ${newStatus} — ${replyText.split('\n')[0]}`});
+        t.status = newStatus;
+        if(newStatus==='Resolved') t.resolution = replyText;
+      } else {
+        t.updates.push({when:Date.now(), what:`Agent note: ${replyText.split('\n')[0]}`});
+      }
+      await saveTickets();
+      showToast(`${t.id} updated${changed?' to '+newStatus:''} — ${t.name.split(' ')[0]} has been notified.`);
+      closeModal();
+      render();
+    });
+  }
+}
+function closeModal(){ document.getElementById('overlay').classList.remove('show'); }
+document.getElementById('overlay').addEventListener('click', e=>{ if(e.target.id==='overlay') closeModal(); });
+
+/* ---------------- BELL / NOTIFICATIONS (simple: count tickets with >1 update) ---------------- */
+function updateBell(){
+  const updated = TICKETS.filter(t=>t.updates.length>1).length;
+  document.getElementById('bellDot').style.display = updated>0 ? 'block' : 'none';
+}
+document.getElementById('bellBtn').addEventListener('click', ()=>{
+  document.querySelector('#tabs button[data-tab="mine"]').click();
+});
+
+/* ---------------- ANALYTICS ---------------- */
+function renderAnalytics(){
+  const total = TICKETS.length;
+  const open = TICKETS.filter(t=>t.status==='Open').length;
+  const resolved = TICKETS.filter(t=>t.status==='Resolved'||t.status==='Closed').length;
+  const resTimes = TICKETS.filter(t=>t.status==='Resolved'||t.status==='Closed').map(t=>{
+    const closeEvt = t.updates.find(u=>u.what.includes('Resolved'));
+    return closeEvt ? (closeEvt.when - t.createdAt) : null;
+  }).filter(Boolean);
+  const avgHrs = resTimes.length ? Math.round(resTimes.reduce((a,b)=>a+b,0)/resTimes.length/3600000) : 0;
+
+  document.getElementById('statGrid').innerHTML = `
+    <div class="stat-card"><div class="num">${total}</div><div class="lbl">Total tickets</div></div>
+    <div class="stat-card"><div class="num">${open}</div><div class="lbl">Currently open</div></div>
+    <div class="stat-card"><div class="num">${resolved}</div><div class="lbl">Resolved / closed</div></div>
+    <div class="stat-card"><div class="num">${avgHrs}h</div><div class="lbl">Avg. resolution time</div></div>
+  `;
+  const byDept = DEPTS.map(d=>({label:d, count: TICKETS.filter(t=>t.category===d).length}));
+  const byUrg = ['Critical','High','Medium','Low'].map(u=>({label:u, count: TICKETS.filter(t=>t.urgency===u).length}));
+  const byStatus = STATUSES.map(s=>({label:s, count: TICKETS.filter(t=>t.status===s).length}));
+  document.getElementById('barsDept').innerHTML = barsHtml(byDept, total);
+  document.getElementById('barsUrg').innerHTML = barsHtml(byUrg, total);
+  document.getElementById('barsStatus').innerHTML = barsHtml(byStatus, total);
+}
+function barsHtml(items, total){
+  const max = Math.max(1, ...items.map(i=>i.count));
+  return items.map(i=>`<div class="bar-row"><span>${i.label}</span><div class="bar-track"><div class="bar-fill" style="width:${(i.count/max*100)}%"></div></div><span style="text-align:right;">${i.count}</span></div>`).join('');
+}
+
+/* ---------------- TOAST ---------------- */
+function showToast(msg){
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className='toast'; el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(()=>el.remove(), 4500);
+}
+
+loadTickets();
+</script>
+</body>
+</html>
